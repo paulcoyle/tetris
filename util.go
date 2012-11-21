@@ -2,51 +2,9 @@ package tetris
 
 import (
 	"fmt"
-	"io"
 	"math/rand"
-	"strconv"
-	"strings"
 	"time"
 )
-
-// Based on the Pason spec for board data.  All boards are 10x20.
-//   - each char is a hex value whose bits represent which blocks are occupied
-//   - blocks are listed for each column of each row starting from the top left
-var boardStringLen int = 10 * 20 / 4
-
-func StringToBoard(data string) (*Board, error) {
-	if len(data) != boardStringLen {
-		return nil, fmt.Errorf("String data length incorrect (expected %d)", boardStringLen)
-	}
-
-	board, _ := NewBoard(10, 20)
-	reader := strings.NewReader(data)
-	var blockNum int = 0
-	for {
-		c, err := reader.ReadByte()
-		if err == io.EOF {
-			break
-		} else if err != nil {
-			return nil, fmt.Errorf("Error reading byte from board data")
-		}
-
-		i, err := strconv.ParseInt(string(c), 16, 8)
-		if err != nil {
-			return nil, fmt.Errorf("Error parsing board data")
-		}
-
-		var mask int64 = 0x8
-		for mask > 0 {
-			var row int = blockNum / 10
-			var col int = blockNum % 10
-			board.SetBlock(row, col, (i&mask > 0))
-			mask = mask >> 1
-			blockNum++
-		}
-	}
-
-	return board, nil
-}
 
 // Usage:
 //
@@ -78,6 +36,7 @@ func StringArrayToBoard(rows []string) (*Board, error) {
 	return board, nil
 }
 
+// Generates a random tetromino and returns a reference to it.
 func RandomTetromino() *Tetromino {
 	rand.Seed(time.Now().UnixNano())
 	keys := make([]string, 0)
