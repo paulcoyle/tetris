@@ -14,7 +14,7 @@ type Board struct {
 
 func NewBoard(width, height int) (*Board, error) {
 	if (width < 1) || (height < 1) {
-		err := fmt.Errorf("Width and Height must both be greater than 1")
+		err := fmt.Errorf("Width and Height must both be greater than 0")
 		return nil, err
 	}
 
